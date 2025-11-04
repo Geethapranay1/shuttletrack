@@ -65,6 +65,7 @@ function ShuttleMapComponent({ shuttles, center = [12.9692, 79.1559], zoom = 15 
   
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
     if (!mapRef.current || !isInitializedRef.current) return;
     
     const handleResize = () => {

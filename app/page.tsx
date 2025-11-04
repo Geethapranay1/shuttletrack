@@ -1,13 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ShuttleMap } from "@/components/shuttle-map";
 import { FloatingInfoPanel } from "@/components/floating-info-panel";
 import { Navbar } from "@/components/navbar";
 import { ShuttleData } from "@/types/shuttle";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
+import dynamic from "next/dynamic";
+
+const ShuttleMap = dynamic(() => import("@/components/shuttle-map"), {
+  ssr: false,
+  loading: () => <div className="w-full h-full bg-muted rounded-lg animate-pulse" />,
+});
 
 export default function Home() {
   const [shuttles, setShuttles] = useState<ShuttleData[]>([]);
@@ -48,7 +53,7 @@ export default function Home() {
 
   useEffect(() => {
     fetchShuttles();
-    // Fetch more frequently to see movement (every 2 seconds)
+
     const interval = setInterval(() => fetchShuttles(true), 2000);
     return () => clearInterval(interval);
   }, []);
