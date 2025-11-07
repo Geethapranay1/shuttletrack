@@ -16,6 +16,14 @@ const STOPS: Stop[] = [
   { id: "6", name: "Food Court", lat: 12.9702, lng: 79.1567 },
 ];
 
+const MOVING_SPEED_THRESHOLD_KMPH = 5;
+const MIN_EFFECTIVE_SPEED_KMPH = 12;
+const MAX_EFFECTIVE_SPEED_KMPH = 32;
+const SPEED_DAMPING_FACTOR = 0.85;
+const ROUTE_DISTANCE_FACTOR = 1.3;
+const MIN_ROUTE_DISTANCE_KM = 0.05;
+const STOP_DELAY_MINUTES = 1;
+
 function calculateDistance(lat1: number, lng1: number, lat2: number, lng2: number): number {
   const R = 6371;
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
@@ -31,12 +39,32 @@ function calculateDistance(lat1: number, lng1: number, lat2: number, lng2: numbe
 }
 
 function estimateArrival(distance: number, speed: number): string {
-  if (speed < 5) return "Stationary";
-  const hours = distance / speed;
-  const minutes = Math.round(hours * 60);
-  if (minutes < 1) return "Arriving";
-  if (minutes < 60) return `${minutes} min`;
-  return `${Math.round(hours)} hr`;
+  if (!Number.isFinite(distance) || !Number.isFinite(speed)) {
+    return "Unknown";
+  }
+
+  if (speed < MOVING_SPEED_THRESHOLD_KMPH) {
+    return "Stationary";
+  }
+
+  const effectiveSpeed = Math.min(
+    Math.max(speed * SPEED_DAMPING_FACTOR, MIN_EFFECTIVE_SPEED_KMPH),
+    MAX_EFFECTIVE_SPEED_KMPH
+  );
+
+  const adjustedDistance = Math.max(distance * ROUTE_DISTANCE_FACTOR, MIN_ROUTE_DISTANCE_KM);
+  const travelMinutes = (adjustedDistance / effectiveSpeed) * 60 + STOP_DELAY_MINUTES;
+
+  if (travelMinutes <= 1.5) {
+    return "~2 min";
+  }
+
+  if (travelMinutes < 60) {
+    return `${Math.ceil(travelMinutes)} min`;
+  }
+
+  const hours = travelMinutes / 60;
+  return `${hours.toFixed(hours >= 10 ? 0 : 1)} hr`;
 }
 
 export default function StopsPage() {
