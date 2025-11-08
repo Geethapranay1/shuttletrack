@@ -110,20 +110,26 @@ export default function AboutPage() {
             <CardTitle>College Information</CardTitle>
           </CardHeader>
           <CardContent>
-            <div>
-              <h4 className="font-semibold">Institution</h4>
+            <div className="space-y-4">
+
+            
+            <div className="space-y-4">
+              <h4 className="font-semibold mb-2">Institution</h4>
               <p className="text-sm">
                 Vellore Institute of Technology
               </p>
             </div>
             <Separator />
             <div>
-              <h4 className="font-semibold">Department</h4>
+              <h4 className="font-semibold mb-2">Department</h4>
               <p className="text-sm">
                 Mechanical Engineering
               </p>
             </div>
+            </div>
     
+            <div>
+            </div>
           </CardContent>
         </Card>
 
